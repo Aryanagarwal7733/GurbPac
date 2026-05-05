@@ -1,0 +1,36 @@
+# Content Broadcasting System - Frontend Notes
+
+## Project Structure
+The application follows a clean, modular architecture within the Next.js App Router paradigm:
+- `src/app`: Contains all routing logic. Roles are separated by directories (`/teacher`, `/principal`, `/live`).
+- `src/components`: Reusable UI elements. Divided into `ui/` (shadcn base components) and `layout/` (structural components like the dashboard sidebar).
+- `src/services`: Handles all API mocking. Isolates data-fetching logic from components. Replaceable with real API calls using Axios.
+- `src/store`: Global state management using Zustand (Auth state).
+
+## Authentication Flow
+- Zustand is used for global auth state.
+- `src/services/auth.service.js` simulates backend authentication and returns mock user data based on email (`teacher@school.com` or `principal@school.com`).
+- The token/user is stored in `localStorage` to persist across reloads.
+- An `AuthProvider` component acts as a high-level wrapper inside `RootLayout` to restrict access based on roles and route unauthenticated users to `/`.
+
+## Role-based Routing
+- Implemented primarily via the `AuthProvider` wrapper, which checks the current `pathname` and the user's role.
+- If a teacher attempts to access `/principal`, they are redirected, and vice versa.
+- The `DashboardLayout` conditionally renders navigation links based on the authenticated user's role.
+
+## API Integration Approach
+- All "API" logic goes through `services/content.service.js` and `services/auth.service.js`.
+- Services use `Promises` and `setTimeout` to mock network latency.
+- State mutation and data are persisted using `localStorage` acting as the mock database.
+- Components never directly query the local database (localStorage); they only call the service methods. This allows for a seamless transition to a real backend.
+
+## State Management Approach
+- **Global State**: Used only for Authentication (`user` and `isAuthenticated`), managed by Zustand because it is minimal and reduces React Context boilerplate.
+- **Local State**: Component-level state (like lists, loading flags, form inputs) is managed with standard React `useState` and `useEffect`.
+- **Forms**: Form state and validation are managed by `react-hook-form` paired with `Zod` to ensure type-safety and robust validation before submitting.
+
+## Assumptions & Edge Cases Handled
+1. **File Upload**: Since there is no real backend, uploaded images are read as Base64 data URLs via `FileReader` and stored as strings in localStorage. This allows previews to persist without an actual cloud storage provider.
+2. **Scheduling**: The live page uses simple polling (`setInterval` every 5 seconds) to fetch the "active" content. It checks if `now()` is between `startTime` and `endTime`.
+3. **Mock Delays**: All service functions have simulated delays (600-800ms) to ensure loaders and pending states are clearly visible and functioning.
+4. **Error Handling**: Form submissions use try-catch blocks and provide user feedback via Toast notifications (using Sonner).
