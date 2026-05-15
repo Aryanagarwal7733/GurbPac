@@ -121,7 +121,11 @@ export default function PendingApprovalsPage() {
                         <div className="h-16 w-24 rounded overflow-hidden bg-gray-100 dark:bg-gray-800 border dark:border-gray-700 relative group">
                           {content.fileUrl ? (
                             <>
-                              <img src={content.fileUrl} alt={content.title} className="w-full h-full object-cover" />
+                              {content.fileUrl.startsWith('data:video') ? (
+                                <video src={content.fileUrl} className="w-full h-full object-cover" muted />
+                              ) : (
+                                <img src={content.fileUrl} alt={content.title} className="w-full h-full object-cover" />
+                              )}
                               <div 
                                 className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
                                 onClick={() => window.open(content.fileUrl, '_blank')}
@@ -130,7 +134,7 @@ export default function PendingApprovalsPage() {
                               </div>
                             </>
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>
+                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Media</div>
                           )}
                         </div>
                       </TableCell>

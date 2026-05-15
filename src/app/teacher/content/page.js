@@ -96,9 +96,13 @@ export default function MyContentPage() {
                       <TableCell>
                         <div className="h-16 w-24 rounded overflow-hidden bg-gray-100 dark:bg-gray-800 border dark:border-gray-700">
                           {content.fileUrl ? (
-                            <img src={content.fileUrl} alt={content.title} className="w-full h-full object-cover" />
+                            content.fileUrl.startsWith('data:video') ? (
+                              <video src={content.fileUrl} className="w-full h-full object-cover" muted />
+                            ) : (
+                              <img src={content.fileUrl} alt={content.title} className="w-full h-full object-cover" />
+                            )
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>
+                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Media</div>
                           )}
                         </div>
                       </TableCell>

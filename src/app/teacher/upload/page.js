@@ -27,8 +27,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 // Schema for validation
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const ACCEPTED_MEDIA_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif", "video/mp4", "video/webm", "video/ogg"];
 
 const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -108,7 +108,10 @@ export default function UploadContentPage() {
     accept: {
       "image/jpeg": [],
       "image/png": [],
-      "image/gif": []
+      "image/gif": [],
+      "video/mp4": [],
+      "video/webm": [],
+      "video/ogg": []
     },
     maxSize: MAX_FILE_SIZE,
     multiple: false
@@ -208,7 +211,11 @@ export default function UploadContentPage() {
                 
                 {previewUrl ? (
                   <div className="relative w-full max-w-sm">
-                    <img src={previewUrl} alt="Preview" className="w-full h-auto rounded-md shadow-sm" />
+                    {selectedFile?.type?.startsWith('video/') ? (
+                      <video src={previewUrl} className="w-full h-auto rounded-md shadow-sm" controls />
+                    ) : (
+                      <img src={previewUrl} alt="Preview" className="w-full h-auto rounded-md shadow-sm" />
+                    )}
                     <Button 
                       type="button" 
                       variant="destructive" 
@@ -225,7 +232,7 @@ export default function UploadContentPage() {
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       <span className="font-semibold text-blue-600 dark:text-blue-500">Click to upload</span> or drag and drop
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">JPG, PNG, or GIF (max. 10MB)</p>
+                    <p className="text-xs text-gray-500 mt-1">JPG, PNG, GIF, MP4, or WebM (max. 50MB)</p>
                   </>
                 )}
               </div>

@@ -76,11 +76,21 @@ export default function LiveBroadcastingPage({ params }) {
       {/* Main Content Area */}
       <div className="flex-1 flex items-center justify-center relative overflow-hidden">
         {activeContent.fileUrl ? (
-          <img 
-            src={activeContent.fileUrl} 
-            alt={activeContent.title}
-            className="w-full h-full object-contain"
-          />
+          activeContent.fileUrl.startsWith('data:video') ? (
+            <video 
+              src={activeContent.fileUrl} 
+              autoPlay 
+              loop 
+              muted 
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <img 
+              src={activeContent.fileUrl} 
+              alt={activeContent.title}
+              className="w-full h-full object-contain"
+            />
+          )
         ) : (
           <div className="text-white text-2xl font-bold tracking-widest">{activeContent.title}</div>
         )}
