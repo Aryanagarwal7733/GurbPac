@@ -115,6 +115,10 @@ export const contentService = {
           const end = new Date(c.endTime);
           return now >= start && now <= end;
         });
+        
+        // Sort by createdAt descending to prioritize newly uploaded content over old/demo content
+        activeContents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
         resolve(activeContents);
       }, MOCK_DELAY);
     });
