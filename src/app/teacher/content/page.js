@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useAuthStore } from "@/store/auth.store";
 import { contentService } from "@/services/content.service";
-import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import {
   Table,
@@ -24,6 +25,18 @@ const ITEMS_PER_PAGE = 5;
 export default function MyContentPage() {
   const user = useAuthStore((state) => state.user);
   const [currentPage, setCurrentPage] = useState(1);
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => contentService.deleteContent(id),
+    onSuccess: () => {
+      toast.success("Content deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["teacherContent"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete content");
+    }
+  });
 
   const { data: contents = [], isLoading } = useQuery({
     queryKey: ["teacherContent", user?.id],
@@ -118,10 +131,25 @@ export default function MyContentPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" onClick={() => window.open(content.fileUrl, '_blank')}>
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          View Full
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" size="sm" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" onClick={() => window.open(content.fileUrl, '_blank')}>
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            View Full
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950" 
+                            onClick={() => {
+                              if(window.confirm('Are you sure you want to delete this content?')) {
+                                deleteMutation.mutate(content.id);
+                              }
+                            }}
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

@@ -68,6 +68,25 @@ export const contentService = {
     });
   },
 
+  deleteContent: async (contentId) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          const contents = getContents();
+          const index = contents.findIndex(c => c.id === contentId);
+          if (index === -1) {
+            return reject(new Error('Content not found'));
+          }
+          contents.splice(index, 1);
+          saveContents(contents);
+          resolve(true);
+        } catch (error) {
+          reject(new Error('Failed to delete content'));
+        }
+      }, MOCK_DELAY);
+    });
+  },
+
   // PRINCIPAL FLOW
   getAllContent: async () => {
     return new Promise((resolve) => {
