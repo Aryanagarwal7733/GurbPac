@@ -81,7 +81,7 @@ export default function LiveBroadcastingPage({ params }) {
               src={activeContent.fileUrl} 
               autoPlay 
               loop 
-              muted 
+              controls
               className="w-full h-full object-contain"
             />
           ) : (
